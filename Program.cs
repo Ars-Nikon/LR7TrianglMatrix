@@ -139,6 +139,7 @@ namespace LR7TrianglMatrix
             return finalvectro;
         }
 
+
         public static int[,] GetMatrix(int[] vector)
         {
             int n = (-1 + (int)Math.Sqrt(1 - 4 * (-2 * vector.Length))) / (2);
@@ -164,7 +165,7 @@ namespace LR7TrianglMatrix
         public static int[] GetVector(int[,] matrix)
         {
             Dictionary<int, int> VectorAndKey = new Dictionary<int, int>();
-            List<int> VectroArray = new List<int>();
+
             for (int i = 0; i < matrix.GetLength(0); i++)
             {
                 for (int j = 0; j < matrix.GetLength(1); j++)
@@ -178,12 +179,10 @@ namespace LR7TrianglMatrix
                 }
             }
 
-            foreach (var item in VectorAndKey.OrderBy(x => x.Key))
-            {
-                VectroArray.Add(item.Value);
-            }
-            return VectroArray.ToArray();
+            return VectorAndKey.OrderBy(x => x.Key).Select(x => x.Value).ToArray();
         }
+
+
 
         static void Main(string[] args)
         {
@@ -217,137 +216,183 @@ namespace LR7TrianglMatrix
                {0,0,0,11},
          };
 
+            int[,] matrix5 = new int[,]
+        {
+               {3,4,5,6,7},
+               {0,13,6,7,8},
+               {0,0,12,9,10},
+               {0,0,0,11,12},
+               {0,0,0,0,12},
+        };
+
+            int[,] matrix6 = new int[,]
+        {
+               {3,4,5,6,7},
+               {0,13,6,7,8},
+               {0,0,12,9,10},
+               {0,0,0,11,12},
+               {0,0,0,0,12},
+        };
+
+
             var vectro3x3 = GetVector(matrix);
             var vectrotwo3x3 = GetVector(matrix2);
-
             var vectro4x4 = GetVector(matrix3);
             var vectrotwo4x4 = GetVector(matrix4);
-
             var table = new ConsoleTable("Type Matrix", "Method", "Time");
-
             var tablevector = new ConsoleTable("Type Matrix", "Method", "Time");
 
+            Stopwatch stopWatchMatrix = new Stopwatch();
+            Stopwatch stopWatchvector = new Stopwatch();
 
-
-            Stopwatch stopWatchMatrix3x3 = new Stopwatch();
-
-            //Matrix3x3
-            //Transpose
-            stopWatchMatrix3x3.Start();
-            var transmatrix = TransposeMatrix(matrix);
-            stopWatchMatrix3x3.Stop();
-            table.AddRow("3x3", "TransposeMatrix", stopWatchMatrix3x3.Elapsed.TotalMilliseconds + "мс");
-            stopWatchMatrix3x3.Reset();
-            //
-            //Sum     
-            stopWatchMatrix3x3.Start();
-            var sumMatrix = SumMatrix(matrix, matrix2);
-            stopWatchMatrix3x3.Stop();
-            table.AddRow("3x3", "SumMatrix", stopWatchMatrix3x3.Elapsed.TotalMilliseconds + "мс");
-            stopWatchMatrix3x3.Reset();
-            //
+            #region Matrix3x3
+            //Trans
+            List<double> Result = new List<double>();
+            for (int i = 0; i < 1000; i++)
+            {
+                stopWatchMatrix.Start();
+                var transmatrix = TransposeMatrix(matrix);
+                stopWatchMatrix.Stop();
+                Result.Add(stopWatchMatrix.Elapsed.TotalMilliseconds);
+                stopWatchMatrix.Reset();
+            }
+            table.AddRow("3x3", "TransposeMatrix", Result.Average() + " мс");
+            //Sum
+            Result = new List<double>();
+            for (int i = 0; i < 1000; i++)
+            {
+                stopWatchMatrix.Start();
+                var sumMatrix = SumMatrix(matrix, matrix2);
+                stopWatchMatrix.Stop();
+                Result.Add(stopWatchMatrix.Elapsed.TotalMilliseconds);
+                stopWatchMatrix.Reset();
+            }
+            table.AddRow("3x3", "SumMatrix", Result.Average() + " мс");
             //multiplicationMatrix
-            stopWatchMatrix3x3.Start();
-            var multiplicationMatrix = MultiplicationMatrix(matrix, matrix2);
-            stopWatchMatrix3x3.Stop();
-            table.AddRow("3x3", "MultiplicationMatrix", stopWatchMatrix3x3.Elapsed.TotalMilliseconds + "мс");
-            stopWatchMatrix3x3.Reset();
-         //Matrix3x3
+            Result = new List<double>();
+            for (int i = 0; i < 1000; i++)
+            {
+                stopWatchMatrix.Start();
+                var multiplicationMatrix = MultiplicationMatrix(matrix, matrix2);
+                stopWatchMatrix.Stop();
+                Result.Add(stopWatchMatrix.Elapsed.TotalMilliseconds);
+                stopWatchMatrix.Reset();
+            }
+            table.AddRow("3x3", "MultiplicationMatrix", Result.Average() + " мс");
+            #endregion
 
-
-
-
-
-
-
-
-            //vector3x3
-            Stopwatch stopWatchvector3x3 = new Stopwatch();
-            //transvect    
-            stopWatchvector3x3.Start();
-            var transvectror = TransposeVector(vectro3x3);
-            stopWatchvector3x3.Stop();
-            tablevector.AddRow("3x3", "TransposeVector", stopWatchvector3x3.Elapsed.TotalMilliseconds + "мс");
-            stopWatchvector3x3.Reset();
-            //sumvect
-            stopWatchvector3x3.Start();
-            var sumvector = SumVector(vectro3x3, vectrotwo3x3);
-            stopWatchvector3x3.Stop();
-            tablevector.AddRow("3x3", "SumVector", stopWatchvector3x3.Elapsed.TotalMilliseconds + "мс");
-            stopWatchvector3x3.Reset();
+            #region Vector3x3
+            
+            //Trans
+            Result = new List<double>();
+            for (int i = 0; i < 1000; i++)
+            {
+                stopWatchvector.Start();
+                var transvectror = TransposeVector(vectro3x3);
+                stopWatchvector.Stop();
+                Result.Add(stopWatchvector.Elapsed.TotalMilliseconds);
+                stopWatchvector.Reset();
+            }
+            tablevector.AddRow("3x3", "TransposeVector", Result.Average() + " мс");
+            //Sum
+            Result = new List<double>();
+            for (int i = 0; i < 1000; i++)
+            {
+                stopWatchvector.Start();
+                var sumvector = SumVector(vectro3x3, vectrotwo3x3);
+                stopWatchvector.Stop();
+                Result.Add(stopWatchvector.Elapsed.TotalMilliseconds);
+                stopWatchvector.Reset();
+            }
+            tablevector.AddRow("3x3", "SumVector", Result.Average() + " мс");
             //mult
-            stopWatchvector3x3.Start();
-            var multiplicationVector = MultiplicationVector(vectro3x3, vectrotwo3x3);
-            stopWatchvector3x3.Stop();
-            tablevector.AddRow("3x3", "MultiplicationVector", stopWatchvector3x3.Elapsed.TotalMilliseconds + "мс");
-            stopWatchvector3x3.Reset();
-            //vector3x3
-
-
-
+            Result = new List<double>();
+            for (int i = 0; i < 1000; i++)
+            {
+                stopWatchvector.Start();
+                var multiplicationVector = MultiplicationVector(vectro3x3, vectrotwo3x3);
+                stopWatchvector.Stop();
+                Result.Add(stopWatchvector.Elapsed.TotalMilliseconds);
+                stopWatchvector.Reset();
+            }
+            tablevector.AddRow("3x3", "MultiplicationVector", Result.Average() + " мс");
+            #endregion
 
             var table4x4 = new ConsoleTable("Type Matrix", "Method", "Time");
             var tablevector4x4 = new ConsoleTable("Type Matrix", "Method", "Time");
 
 
-
-
-
-
-            Stopwatch stopWatchMatrix4x4 = new Stopwatch();
-            //Matrix4x4
-            //Transpose
-            stopWatchMatrix4x4.Start();
-            var transmatrix4x4 = TransposeMatrix(matrix3);
-            stopWatchMatrix4x4.Stop();
-            table4x4.AddRow("4x4", "TransposeMatrix", stopWatchMatrix4x4.Elapsed.TotalMilliseconds + "мс");
-            stopWatchMatrix4x4.Reset();
-            //
-            //Sum     
-            stopWatchMatrix4x4.Start();
-            var sumMatrix4x4 = SumMatrix(matrix3, matrix4);
-            stopWatchMatrix4x4.Stop();
-            table4x4.AddRow("4x4", "SumMatrix", stopWatchMatrix4x4.Elapsed.TotalMilliseconds + "мс");
-            stopWatchMatrix4x4.Reset();
-            //
+            #region Matrix4x4
+            //Trans
+            Result = new List<double>();
+            for (int i = 0; i < 1000; i++)
+            {
+                stopWatchMatrix.Start();
+                var transmatrix = TransposeMatrix(matrix3);
+                stopWatchMatrix.Stop();
+                Result.Add(stopWatchMatrix.Elapsed.TotalMilliseconds);
+                stopWatchMatrix.Reset();
+            }
+            table4x4.AddRow("4x4", "TransposeMatrix", Result.Average() + " мс");
+            //Sum
+            Result = new List<double>();
+            for (int i = 0; i < 1000; i++)
+            {
+                stopWatchMatrix.Start();
+                var sumMatrix = SumMatrix(matrix3, matrix4);
+                stopWatchMatrix.Stop();
+                Result.Add(stopWatchMatrix.Elapsed.TotalMilliseconds);
+                stopWatchMatrix.Reset();
+            }
+            table4x4.AddRow("4x4", "SumMatrix", Result.Average() + " мс");
             //multiplicationMatrix
-            stopWatchMatrix4x4.Start();
-            var multiplicationMatrix4x4 = MultiplicationMatrix(matrix3, matrix4);
-            stopWatchMatrix4x4.Stop();
-            table4x4.AddRow("4x4", "MultiplicationMatrix", stopWatchMatrix4x4.Elapsed.TotalMilliseconds + "мс");
-            stopWatchMatrix4x4.Reset();
-            //Matrix4x4
+            Result = new List<double>();
+            for (int i = 0; i < 1000; i++)
+            {
+                stopWatchMatrix.Start();
+                var multiplicationMatrix = MultiplicationMatrix(matrix3, matrix4);
+                stopWatchMatrix.Stop();
+                Result.Add(stopWatchMatrix.Elapsed.TotalMilliseconds);
+                stopWatchMatrix.Reset();
+            }
+            table4x4.AddRow("4x4", "MultiplicationMatrix", Result.Average() + " мс");
+            #endregion
 
-
-
-
-
-
-
-            Stopwatch stopWatchVector4x4 = new Stopwatch();
-            //vectro4x4
-            //transvect    
-            stopWatchVector4x4.Start();
-            var transvectror4x4 = TransposeVector(vectro4x4);
-            stopWatchVector4x4.Stop();
-            tablevector4x4.AddRow("4x4", "TransposeVector", stopWatchVector4x4.Elapsed.TotalMilliseconds + "мс");
-            stopWatchVector4x4.Reset();
-            //sumvect
-            stopWatchVector4x4.Start();
-            var sumvector4x4 = SumVector(vectro4x4, vectrotwo4x4);
-            stopWatchVector4x4.Stop();
-            tablevector4x4.AddRow("4x4", "SumVector", stopWatchVector4x4.Elapsed.TotalMilliseconds + "мс");
-            stopWatchVector4x4.Reset();
+            #region Vector4x4         
+            //Trans
+            Result = new List<double>();
+            for (int i = 0; i < 1000; i++)
+            {
+                stopWatchvector.Start();
+                var transvectror = TransposeVector(vectro4x4);
+                stopWatchvector.Stop();
+                Result.Add(stopWatchvector.Elapsed.TotalMilliseconds);
+                stopWatchvector.Reset();
+            }
+            tablevector4x4.AddRow("4x4", "TransposeVector", Result.Average() + " мс");
+            //Sum
+            Result = new List<double>();
+            for (int i = 0; i < 1000; i++)
+            {
+                stopWatchvector.Start();
+                var sumvector = SumVector(vectro4x4, vectrotwo4x4);
+                stopWatchvector.Stop();
+                Result.Add(stopWatchvector.Elapsed.TotalMilliseconds);
+                stopWatchvector.Reset();
+            }
+            tablevector4x4.AddRow("4x4", "SumVector", Result.Average() + " мс");
             //mult
-            stopWatchVector4x4.Start();
-            var multiplicationVector4x4 = MultiplicationVector(vectro4x4, vectrotwo4x4);
-            stopWatchVector4x4.Stop();
-            tablevector4x4.AddRow("4x4", "MultiplicationVector", stopWatchVector4x4.Elapsed.TotalMilliseconds + "мс");
-            stopWatchVector4x4.Reset();
-            // vextor4x4
-
-
-
+            Result = new List<double>();
+            for (int i = 0; i < 1000; i++)
+            {
+                stopWatchvector.Start();
+                var multiplicationVector = MultiplicationVector(vectro4x4, vectrotwo4x4);
+                stopWatchvector.Stop();
+                Result.Add(stopWatchvector.Elapsed.TotalMilliseconds);
+                stopWatchvector.Reset();
+            }
+            tablevector4x4.AddRow("4x4", "MultiplicationVector", Result.Average() + " мс");
+            #endregion
 
             table.Write(Format.Alternative);
             tablevector.Write(Format.Alternative);
@@ -356,53 +401,7 @@ namespace LR7TrianglMatrix
             tablevector4x4.Write(Format.Alternative);
 
 
-            Console.WriteLine("TranseMatrix");
-            WriteMatrix(transmatrix);
-            Console.WriteLine();
-            Console.WriteLine("TranseVectror");
-            WriteMatrix(transvectror);
-            Console.WriteLine();
 
-            Console.WriteLine("SumMatrix");
-            WriteMatrix(sumMatrix);
-            Console.WriteLine();
-            Console.WriteLine("SumVectror");
-            WriteMatrix(GetMatrix(sumvector));
-            Console.WriteLine();
-
-            Console.WriteLine("MultipMatrix");
-            WriteMatrix(multiplicationMatrix);
-            Console.WriteLine();
-            Console.WriteLine("MultipVectror");
-            WriteMatrix(GetMatrix(multiplicationVector));
-            Console.WriteLine();
-
-
-
-
-
-
-
-            Console.WriteLine("TranseMatrix");
-            WriteMatrix(transmatrix4x4);
-            Console.WriteLine();
-            Console.WriteLine("TranseVectror");
-            WriteMatrix(transvectror4x4);
-            Console.WriteLine();
-
-            Console.WriteLine("SumMatrix");
-            WriteMatrix(sumMatrix4x4);
-            Console.WriteLine();
-            Console.WriteLine("SumVectror");
-            WriteMatrix(GetMatrix(sumvector4x4));
-            Console.WriteLine();
-
-            Console.WriteLine("MultipMatrix");
-            WriteMatrix(multiplicationMatrix4x4);
-            Console.WriteLine();
-            Console.WriteLine("MultipVectror");
-            WriteMatrix(GetMatrix(multiplicationVector4x4));
-            Console.WriteLine();
         }
     }
 }
